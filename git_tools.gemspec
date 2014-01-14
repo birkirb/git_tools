@@ -3,9 +3,10 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "git_tools"
-  s.version     = '0.0.1'
+  s.version     = '0.1.0'
   s.authors     = ["Birkir A. Barkarson"]
   s.email       = ["birkirb@stoicviking.net"]
+  s.licenses    = ['MIT']
   s.homepage    = "https://github.com/birkirb/git_tools"
   s.summary     = %q{Collection of various handy git commands and tasks.}
   s.description = %q{Git tools for installing hooks, cleaning up branches and more.}
