@@ -8,7 +8,7 @@ commit_source = ARGV[1]
 exit if ['merge', 'commit', 'message'].include? commit_source
 
 working_dir = File.expand_path(File.join(File.dirname(message_file), '..'))
-template_file = File.join(working_dir, '.git_prepare_commit_msg')
+template_file = File.join(working_dir, '.git_tools', 'templates', 'prepare_commit_msg')
 contents = File.read(message_file)
 
 has_merge_message = contents.match(/^Merge branch/m) # Commit with resolved merge conflicts don't have a commit source.

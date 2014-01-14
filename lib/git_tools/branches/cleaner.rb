@@ -3,8 +3,8 @@ require 'git_tools/extensions/time'
 module GitTools
   module Branches
 
-    KEEP_LIST = %w(master stable testing)
-    KEEP_BRANCH_FILENAME = '.git_keep_branches'
+    KEEP_LIST = %w(master develop development testing stable release production)
+    KEEP_BRANCH_FILENAME = File.join(CUSTOM_DIR, 'keep_branches')
 
     def self.git_keep_branches_from_file
       if File.exists?(KEEP_BRANCH_FILENAME)
