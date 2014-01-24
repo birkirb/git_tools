@@ -82,6 +82,8 @@ module GitTools
         end
 
         git_remote_prune
+      rescue StandardError => e
+        puts e.message
       end
 
       private
@@ -153,7 +155,11 @@ module GitTools
 
       def self.age(branch)
         time = DATE_REGEXP.match(`git log --shortstat --date=iso -n 1 #{branch}`)
-        Time.parse(time[1])
+        if time.nil?
+          raise "Error due to unexpected git output."
+        else
+          Time.parse(time[1])
+        end
       end
 
       def self.executor

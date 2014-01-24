@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "git_tools"
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.authors     = ["Birkir A. Barkarson"]
   s.email       = ["birkirb@stoicviking.net"]
   s.licenses    = ['MIT']

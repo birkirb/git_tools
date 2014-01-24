@@ -15,9 +15,9 @@ namespace :gem do
   end 
 
   desc 'Install the gem locally'
-  task :install do
+  task :install => :build do
     gem = `ls pkg`.split.sort
-    `gem install pkg/#{gem.last}`
+    puts `gem install pkg/#{gem.last}`
   end 
 end
 
