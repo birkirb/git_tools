@@ -54,6 +54,7 @@ module GitTools
       end
 
       def run!
+        puts "Skipping prompts" if $VERBOSE && ActionExecutor.skip_prompted
         (@branches - protected_branches - [master_branch] ).each do |branch|
           branch = Branch.new(branch, remote)
           containing_branches = contained_branches(branch.normalized_name) - [branch.name]
@@ -211,6 +212,10 @@ module GitTools
 
       def self.test_mode=(value)
         @@test_mode = (value == true)
+      end
+
+      def self.skip_prompted
+        @@skip_prompted
       end
 
       def self.skip_prompted=(value)

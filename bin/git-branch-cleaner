@@ -25,8 +25,8 @@ DOCOPT
 
 begin
   args = Docopt::docopt(doc)
-  GitTools::Branches::ActionExecutor.test_mode = args[:test]
-  GitTools::Branches::ActionExecutor.skip_prompted = !args[:prompt]
+  GitTools::Branches::ActionExecutor.test_mode = args['--test']
+  GitTools::Branches::ActionExecutor.skip_prompted = !args['--prompt']
 
   if args['--verbose']
     $VERBOSE = true
