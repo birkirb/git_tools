@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require 'docopt'
+require 'git_tools'
+require 'git_tools/branches/cleaner'
+
+doc = <<DOCOPT
+Git branch cleaner. Will clean up local and remote branches based on master (HEAD) branch.
+
+Usage:
+  #{__FILE__} [options]
+
+Options:
+  -h --help                    Show this screen.
+  -v --version                 Show version.
+  -w --verbose                 Show verbose messages.
+  -d --debug                   Show debug messages.
+  -t --test                    Test run (no actualy deleting of branches).
+  -l --local                   Delete local branches.
+  -r --remote                  Delete remote branches.
+  -m --master <branch_name>    Use branch as master.
+  -p --prompt                  Deletion confirmation prompts.
+                               Without this all prompts are assumed to be negative.
+DOCOPT
+
+begin
+  args = Docopt::docopt(doc)
+  GitTools::Branches::ActionExecutor.test_mode = args[:test]
+  GitTools::Branches::ActionExecutor.skip_prompted = !args[:prompt]
+
+  if args['--verbose']
+    $VERBOSE = true
+  end
+
+  if args['--debug']
+    $DEBUG = true
+  end
+
+  puts args.inspect if $DEBUG
+
+  if args['--local']
+    if master = args['--master']
+      GitTools::Branches::Cleaner.with_local(master).run!
+    else
+      GitTools::Branches::Cleaner.with_local.run!
+    end
+  end
+
+  if args['--remote']
+    GitTools::Branches::Cleaner.with_origin.run!
+  end
+rescue Docopt::Exit => e
+  puts e.message
+end

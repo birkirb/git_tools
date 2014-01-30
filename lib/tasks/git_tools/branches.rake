@@ -16,12 +16,11 @@ namespace :git do
     namespace :clean do
       desc 'Clean up local branches'
       task :local do
-        GitTools::Branches::Cleaner.with_local('stable').run!
+        GitTools::Branches::Cleaner.with_local.run!
       end
 
       desc 'Clean up remote branches'
       task :remote do
-        # TODO: Handle non origin
         GitTools::Branches::Cleaner.with_origin.run!
       end
 

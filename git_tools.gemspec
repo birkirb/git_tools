@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "git_tools"
-  s.version     = '0.1.1'
+  s.version     = '0.2.0'
   s.authors     = ["Birkir A. Barkarson"]
   s.email       = ["birkirb@stoicviking.net"]
   s.licenses    = ['MIT']
@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "git_tools"
 
+  s.add_runtime_dependency("docopt")
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }

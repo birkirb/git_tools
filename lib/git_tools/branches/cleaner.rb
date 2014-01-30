@@ -26,7 +26,7 @@ module GitTools
 
       attr_reader :master_branch, :remote, :protected_branches
 
-      def self.with_local(master_branch, protected_branches = nil)
+      def self.with_local(master_branch = nil, protected_branches = nil)
         self.new(nil, master_branch, protected_branches)
       end
 
@@ -42,7 +42,7 @@ module GitTools
         @master_branch = master_branch || get_remote_head || MASTER_BRANCH
         @branches = branches
 
-        if @master_branch.nil?
+        if @master_branch.empty?
           raise "Master branch was not set or determined."
         else
           puts "Master branch is #{@master_branch}" if $VERBOSE
@@ -105,7 +105,8 @@ module GitTools
       end
 
       def get_remote_head
-        (`git branch -r | grep #{remote}/HEAD`).sub(/#{remote}\/HEAD -> #{remote}\//, '').strip
+        head = (`git branch -r | grep #{remote}/HEAD`).sub(/#{remote}\/HEAD -> #{remote}\//, '').strip
+        head.empty? ? nil : head
       end
 
       def clean_branches_result(branches)
