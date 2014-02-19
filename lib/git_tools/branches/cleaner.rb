@@ -106,7 +106,7 @@ module GitTools
       end
 
       def get_remote_head
-        head = (`git branch -r | grep #{remote}/HEAD`).sub(/#{remote}\/HEAD -> #{remote}\//, '').strip
+        head = (`git branch -r | grep /HEAD`).sub(/\w+\/HEAD -> \w+\//, '').strip
         head.empty? ? nil : head
       end
 
