@@ -5,28 +5,37 @@ require 'git_tools'
 require 'git_tools/branches/cleaner'
 
 doc = <<DOCOPT
-Git branch cleaner. Will clean up local and remote branches based on master (HEAD) branch.
+Git branch cleaner. Will delete local and remote branches that have been merged into the master HEAD branch.
+Only branches older than merged threshold will be deleted unless otherwise specified.
+Unmerged branches older than the unmerged threshold will deleted only if so specified.
 
 Usage:
-  #{__FILE__} [options]
+  #{File.basename(__FILE__)} [options]
 
 Options:
-  -h --help                    Show this screen.
-  -v --version                 Show version.
-  -w --verbose                 Show verbose messages.
-  -d --debug                   Show debug messages.
-  -t --test                    Test run (no actualy deleting of branches).
-  -l --local                   Delete local branches.
-  -r --remote                  Delete remote branches.
-  -m --master <branch_name>    Use branch as master.
-  -p --prompt                  Deletion confirmation prompts.
-                               Without this all prompts are assumed to be negative.
+  -h --help                       Show this screen.
+  -v --version                    Show version and exit.
+  -w --verbose                    Show verbose messages.
+  -d --debug                      Show debug messages.
+  -n --no-execute                 Test run (no actualy deleting of branches).
+  -l --local                      Delete local branches.
+  -r --remote                     Delete remote branches.
+  -t --merged-threshold <days>    Delete merged branches older than this
+                                  (default ≈15 days).
+  -u --unmerged-threshold <days>  Prompt for deletion of unmerged branches older
+                                  than this (default ≈180 days, forces -p flag).
+  -m --master <branch_name>       Use branch as master.
+  -p --prompt                     Deletion confirmation prompts. Without this
+                                  all prompts are assumed to be negative.
 DOCOPT
 
 begin
   args = Docopt::docopt(doc)
-  GitTools::Branches::ActionExecutor.test_mode = args['--test']
-  GitTools::Branches::ActionExecutor.skip_prompted = !args['--prompt']
+
+  if args['--version']
+    puts File.read(File.expand_path(File.join(File.dirname(__FILE__), '..', 'VERSION')))
+    exit
+  end
 
   if args['--verbose']
     $VERBOSE = true
@@ -37,6 +46,18 @@ begin
   end
 
   puts args.inspect if $DEBUG
+
+  if time = args['--merged-threshold']
+    GitTools::Branches::Cleaner.merged_threshold_in_days = time.to_i
+  end
+
+  if time = args['--unmerged-threshold']
+    GitTools::Branches::Cleaner.unmerged_threshold_in_days = time.to_i
+    args['--prompt'] = true # Force this option.
+  end
+
+  GitTools::Branches::ActionExecutor.test_mode = args['--no-execute']
+  GitTools::Branches::ActionExecutor.skip_prompted = !args['--prompt']
 
   if args['--local']
     if master = args['--master']

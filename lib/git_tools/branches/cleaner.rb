@@ -21,8 +21,8 @@ module GitTools
     class Cleaner
       MASTER_BRANCH = 'master'
       DEFAULT_REMOTE = 'origin'
-      AGE_THRESHOLD_IN_MONTHS_FOR_DELETING_REMOTE_BRANCHES_IN_MASTER = 1 * Time::SECONDS_IN_MONTH
-      AGE_THRESHOLD_IN_MONTHS_FOR_DELETING_ANY_UNMERGED_BRANCHES = 6 * Time::SECONDS_IN_MONTH
+      @@age_threshold_for_deleting_remote_branches_in_master = 15 * Time::SECONDS_IN_DAY
+      @@age_threshold_for_deleting_any_unmerged_branches = 180 * Time::SECONDS_IN_DAY
 
       attr_reader :master_branch, :remote, :protected_branches
 
@@ -32,6 +32,22 @@ module GitTools
 
       def self.with_origin(protected_branches = nil)
         self.new(DEFAULT_REMOTE, nil, protected_branches)
+      end
+
+      def self.merged_threshold
+        @@age_threshold_for_deleting_remote_branches_in_master
+      end
+
+      def self.merged_threshold_in_days=(days)
+        @@age_threshold_for_deleting_remote_branches_in_master = days * Time::SECONDS_IN_DAY
+      end
+
+      def self.unmerged_threshold
+        @@age_threshold_for_deleting_any_unmerged_branches
+      end
+
+      def self.unmerged_threshold_in_days=(days)
+        @@age_threshold_for_deleting_any_unmerged_branches = days * Time::SECONDS_IN_DAY
       end
 
       public
@@ -47,6 +63,11 @@ module GitTools
         else
           puts "Master branch is #{@master_branch}" if $VERBOSE
         end
+
+        puts "Merged branch threshold is #{@@age_threshold_for_deleting_remote_branches_in_master/Time::SECONDS_IN_DAY} days." if $VERBOSE
+        puts "Unmerged branch threshold is #{@@age_threshold_for_deleting_any_unmerged_branches/Time::SECONDS_IN_DAY} days." if $VERBOSE
+
+        git_remote_prune
       end
 
       def local?
@@ -141,12 +162,12 @@ module GitTools
         if local?
           true
         else
-          (Time.now - time) > AGE_THRESHOLD_IN_MONTHS_FOR_DELETING_REMOTE_BRANCHES_IN_MASTER
+          (Time.now - time) > self.class.merged_threshold
         end
       end
 
       def delete_unmerged_branch?(time)
-        (Time.now - time) > AGE_THRESHOLD_IN_MONTHS_FOR_DELETING_ANY_UNMERGED_BRANCHES
+        (Time.now - time) > self.class.unmerged_threshold
       end
 
     end
