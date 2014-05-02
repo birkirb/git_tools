@@ -67,14 +67,19 @@ module GitTools
         puts "Merged branch threshold is #{@@age_threshold_for_deleting_remote_branches_in_master/Time::SECONDS_IN_DAY} days." if $VERBOSE
         puts "Unmerged branch threshold is #{@@age_threshold_for_deleting_any_unmerged_branches/Time::SECONDS_IN_DAY} days." if $VERBOSE
 
-        git_remote_prune
       end
 
       def local?
         @remote.nil?
       end
 
+      def remote?
+        !local?
+      end
+
       def run!
+        git_remote_prune
+
         puts "Skipping prompts" if $VERBOSE && ActionExecutor.skip_prompted
         (@branches - protected_branches - [master_branch] ).each do |branch|
           branch = Branch.new(branch, remote)
@@ -106,12 +111,15 @@ module GitTools
         git_remote_prune
       rescue StandardError => e
         puts e.message
+        puts e.backtrace if $DEBUG
       end
 
       private
 
       def git_remote_prune
-        `git remote prune #{remote}` unless local?
+        if remote?
+          `git remote prune #{remote}`
+        end
       end
 
       def label_for_remote
