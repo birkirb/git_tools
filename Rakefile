@@ -1,4 +1,5 @@
 require 'rake'
+require 'git_tools'
 
 namespace :gem do
   desc 'Build the gem'

@@ -13,7 +13,9 @@ contents = File.read(message_file)
 
 has_merge_message = contents.match(/^Merge branch/m) # Commit with resolved merge conflicts don't have a commit source.
 exit if has_merge_message
-ticket_no_from_branch_name = contents.scan(/On branch .+#(\d{1,5})/)
+
+branch_name = contents.match(/^# On branch(.+)$/).captures.first.strip
+ticket_no_from_branch_name = branch_name.scan(/[0-9]+/)
 
 if ticket_no_from_branch_name.empty?
   references = nil
@@ -24,7 +26,7 @@ if ticket_no_from_branch_name.empty?
 MESSAGE
 else
   references = ticket_no_from_branch_name.join(', #')
-  default_line = "Issue tracker: ##{references}"
+  default_line = "Issue references: ##{references}"
 end
 
 if File.exists?(template_file)
