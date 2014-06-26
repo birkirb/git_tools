@@ -56,6 +56,9 @@ module GitTools
         @remote = remote
         @protected_branches = protected_branches || Branches.default_keep_list
         @master_branch = master_branch || get_remote_head || MASTER_BRANCH
+
+        git_remote_prune # Prune before collecting branch names.
+
         @branches = branches
 
         if @master_branch.empty?
@@ -66,7 +69,6 @@ module GitTools
 
         puts "Merged branch threshold is #{@@age_threshold_for_deleting_remote_branches_in_master/Time::SECONDS_IN_DAY} days." if $VERBOSE
         puts "Unmerged branch threshold is #{@@age_threshold_for_deleting_any_unmerged_branches/Time::SECONDS_IN_DAY} days." if $VERBOSE
-
       end
 
       def local?
@@ -78,8 +80,6 @@ module GitTools
       end
 
       def run!
-        git_remote_prune
-
         puts "Skipping prompts" if $VERBOSE && ActionExecutor.skip_prompted
         (@branches - protected_branches - [master_branch] ).each do |branch|
           branch = Branch.new(branch, remote)
@@ -185,9 +185,10 @@ module GitTools
       DATE_REGEXP = /^Date:\s+(.*)$/
 
       def self.age(branch)
-        time = DATE_REGEXP.match(`git log --shortstat --date=iso -n 1 #{branch}`)
+        cmd = "git log --shortstat --date=iso -n 1 #{branch}"
+        time = DATE_REGEXP.match(`#{cmd}`)
         if time.nil?
-          raise "Error due to unexpected git output."
+          raise "Error due to unexpected git output on command: #{cmd}."
         else
           Time.parse(time[1])
         end
