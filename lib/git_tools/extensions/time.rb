@@ -31,7 +31,7 @@ class Time
     end
 
     if dt < SECONDS_IN_MINUTE
-      return 'now'.t
+      return 'now'
     else
       HUMAN_TIMES.each do |time|
         seconds    = time[0]
@@ -43,7 +43,7 @@ class Time
         end
       end
       # Above the higest limit
-      "over a year #{tense}".t
+      "over a year #{tense}"
     end
   end
 
