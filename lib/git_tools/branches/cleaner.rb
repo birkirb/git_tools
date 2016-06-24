@@ -217,7 +217,7 @@ module GitTools
       end
 
       def confirm_remove(message, prompt)
-        self.class.executor.execute(remove_branch_action, message, prompt)
+        self.class.executor.execute(force_remove_branch_action, message, prompt)
       end
 
       def to_s
@@ -232,6 +232,10 @@ module GitTools
 
       def remove_branch_action
         local? ? "git branch -d #{name}" : "git push #{remote} :#{name}"
+      end
+
+      def force_remove_branch_action
+        local? ? "git branch -D #{name}" : "git push #{remote} :#{name}"
       end
     end
 
